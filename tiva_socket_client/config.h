@@ -42,8 +42,8 @@
 // set to use the inactive UART.
 //
 //*****************************************************************************
-//#define DEBUG_UART 0
-//extern void UARTprintf(const char *pcString, ...);
+#define DEBUG_UART 1
+extern void UARTprintf(const char *pcString, ...);
 #ifdef DEBUG_UART
 #define DEBUG_MSG               UARTprintf
 #else

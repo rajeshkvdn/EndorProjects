@@ -37,5 +37,6 @@
 #define PRIORITY_SERIAL_TASK    1
 #define PRIORITY_ETH_INT_TASK   1
 #define PRIORITY_TCPIP_TASK     3
+#define PRIORITY_MODEM_TASK    1
 
 #endif // __PRIORITIES_H__

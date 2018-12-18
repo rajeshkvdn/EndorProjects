@@ -41,6 +41,7 @@
 #include "config.h"
 #include "lwip_task.h"
 #include "serial_task.h"
+#include "modem_task.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -223,13 +224,24 @@ main(void)
     //
     // Initialize the serial peripherals and create the Serial task.
     //
-/*    if(SerialTaskInit() != 0)
+    if(SerialTaskInit() != 0)
     {
         UARTprintf("Failed to create Serial task!\n");
         while(1)
         {
         }
-    }*/
+    }
+
+    //
+    // Initialize the Modem command task.
+    //
+    if(ModemTaskInit() != 0)
+    {
+        UARTprintf("Failed to create Modem task!\n");
+        while(1)
+        {
+        }
+    }
 
     /* Initialize tcp echo server */
     tcpecho_init();

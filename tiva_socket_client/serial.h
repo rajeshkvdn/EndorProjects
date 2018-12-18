@@ -26,6 +26,8 @@
 #define __SERIAL_H__
 
 #include "utils/ringbuf.h"
+#include "stdint.h"
+#include "stdbool.h"
 
 //*****************************************************************************
 //

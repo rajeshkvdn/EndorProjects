@@ -40,10 +40,13 @@
 #include "lwip/api.h"
 #include "utils/uartstdio.h"
 #include "string.h"
+#include "modem_task.h"
+
 
 #define TCPECHO_THREAD_PRIO  ( tskIDLE_PRIORITY + 3 )
 
-
+void GsmGprsInit(void);
+void ModemCmdReq(tModemCmdType ctype, uint32_t delay);
 
 /*-----------------------------------------------------------------------------------*/
 static void tcpecho_thread(void *arg)
@@ -61,6 +64,7 @@ static void tcpecho_thread(void *arg)
   IP4_ADDR( &local_ipaddr,192,168,1,200);
   IP4_ADDR( &remote_ipaddr,192,168,1,250);
 
+  GsmGprsInit();
 
   LWIP_UNUSED_ARG(arg);
 
@@ -121,4 +125,33 @@ void tcpecho_init(void)
 }
 /*-----------------------------------------------------------------------------------*/
 
+void createReqQue(void)
+{
+    g_QueModemReq  = xQueueCreate(64, sizeof(tModemEvent));
+    if(g_QueModemReq == 0)
+    {
+        return(1);
+    }
+}
+
+void GsmGprsInit(void)
+{
+    ModemCmdReq(AT, 10);
+    ModemCmdReq(ATE1, 10);
+    ModemCmdReq(AT_CFUN, 10);
+    ModemCmdReq(AT_CUSD, 10);
+    ModemCmdReq(ATD, 10);
+
+
+}
+
+void ModemCmdReq(tModemCmdType ctype, uint32_t delay)
+{
+    tModemEvent tmodEvnt;
+
+    tmodEvnt.eCommandType = ctype;
+    tmodEvnt.cmdRespDelayMs = delay;
+    xQueueSend( g_QueModemReq, ( void * ) &tmodEvnt, ( TickType_t ) 10 );
+
+}
 #endif /* LWIP_NETCONN */
