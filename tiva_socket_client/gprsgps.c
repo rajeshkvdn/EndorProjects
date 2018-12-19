@@ -23,7 +23,7 @@ const char *at_nmea_seq = {"AT+CGNSSEQ=\"RMC\"\r\n"};
 const char *at_cgns_info = {"AT+CGNSINF\r\n"};
 
 /*******GPRS**********/
-const char *at_gprs_stat = {"AT+CGATT?\r\n"};
+const char *at_gprs_stat = {"AT+CGATT=1\r\n"};
 const char *at_apn = {"AT+CSTT=\"bsnlnet\",\"\",\"\"\r\n"};
 const char *at_conn = {"AT+CIICR\r\n"};
 const char *at_ip_addr = {"AT+CIFSR\r\n"};
@@ -49,7 +49,7 @@ Returns :  NIL
 
 void modemcmdReq(char *req)
 {
-int len, i=0, count = 0;
+int leng, i=0, count = 0;
 char rbuff[512];
 char cbuff[512];
 
@@ -57,10 +57,10 @@ char cbuff[512];
 memset(rbuff, 0, sizeof(rbuff));
 memset(cbuff, 0, sizeof(cbuff));
 strcpy(cbuff, req);
-len = strlen(cbuff);
+leng = strlen(cbuff);
 
 i = 0;
-while(i < len)
+while(i < leng)
     {
     SerialSend(0, cbuff[i]);
     i++;
@@ -268,16 +268,26 @@ void cmd_send_gprsdata(char *sbuf)
 {
 int l, dlen;
 char *idx;
-char rep[1024];
-char tempbuff[1024]; 
-memset(rep, 0, sizeof(rep));
+char tempbuff[256];
+
 memset(tempbuff, 0, sizeof(tempbuff));
 
 dlen = strlen(sbuf);
 
-sprintf(tempbuff,"AT+CIPSEND=%d\r\n", dlen);
+//sprintf(tempbuff,"AT+CIPSEND=%d\r\n", dlen);
+
+sprintf(tempbuff,"AT+CIPSEND\r\n");
 
 modemcmdReq(tempbuff);
+
+vTaskDelay(1000);
+
+memset(tempbuff, 0, sizeof(tempbuff));
+memcpy(tempbuff, sbuf, dlen);
+tempbuff[dlen]=0x1A;
+
+modemcmdReq(tempbuff);
+
 }
 
 
@@ -384,6 +394,7 @@ memset(tembuf, 0, sizeof(tembuf));
 strncpy(tembuf, msg, len);
 tembuf[len] = 0x1A;		/*CtrlZ*/
 
+vTaskDelay(10);
 modemcmdReq(tembuf);
 }
 

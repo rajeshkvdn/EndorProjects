@@ -102,6 +102,45 @@ tModemEvent modEvent;
             case ATD:
                 cmd_call_start("9446033603");
                 break;
+            case AT_CMGF:
+                cmd_smsformat_set();
+                break;
+            case AT_CSMP:
+                cmd_smsmode_set();
+                break;
+            case AT_CMGS:
+                cmd_sms_send("8921339752", "Hello", 5);
+                break;
+            case AT_CGATT:
+                cmd_gprs_stat();
+                break;
+            case AT_CSTT:
+                cmd_apn_set();
+                break;
+            case AT_CIICR:
+                cmd_wl_conn();
+                vTaskDelay(1000);
+                vTaskDelay(1000);
+                break;
+            case AT_CIFSR:
+                cmd_ip_get();
+                vTaskDelay(1000);
+                vTaskDelay(1000);
+                break;
+            case AT_CIPSTART:
+                cmd_conn_start();
+                vTaskDelay(1000);
+                vTaskDelay(1000);
+                break;
+            case AT_CIPSEND:
+                cmd_send_gprsdata("Gprs Data Upload");
+                break;
+            case AT_CIPCLOSE:
+                cmd_conn_close();
+                break;
+            case AT_CIPSHUT:
+                cmd_conn_shut();
+                break;
             default:
             }
             // Suspend task for a time specified for getting response from modem

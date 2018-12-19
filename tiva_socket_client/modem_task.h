@@ -12,6 +12,12 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+
+
+#define TST_VOICE_CALL 0
+#define TST_SMS_ALERT 0
+#define TST_GPRS_UPLOAD 1
+#define TST_GPS_TRACK 1
 //
 //Strtucture deffinitions of Modem Communication Task
 //
