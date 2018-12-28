@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -37,13 +38,14 @@
 //
 //*****************************************************************************
 xQueueHandle g_QueModemReq;
+xQueueHandle g_QueModemResp;
 
 
 uint32_t
 ModemTaskInit(void)
 {
 
-    g_QueModemReq  = xQueueCreate(64, sizeof(tModemEvent));
+    g_QueModemReq  = xQueueCreate(64, sizeof(tModemEventReq));
     if(g_QueModemReq == 0)
     {
         return(1);
@@ -71,7 +73,7 @@ ModemTask(void *pvParameters)
 {
 int len = 0;
 char modemresp[256];
-tModemEvent modEvent;
+tModemEventReq modEventReq;
 
     while(1)
     {
@@ -80,9 +82,9 @@ tModemEvent modEvent;
         // Block until a message is put on the g_QueSerial queue by the
         // interrupt handler.
         //
-        if(xQueueReceive(g_QueModemReq, (void*) &modEvent, (TickType_t)10) == pdTRUE)
+        if(xQueueReceive(g_QueModemReq, (void*) &modEventReq, (TickType_t)10) == pdTRUE)
         {
-            switch(modEvent.eCommandType)
+            switch(modEventReq.eCommandType)
             {
             case AT:
                 cmd_test();
@@ -141,17 +143,33 @@ tModemEvent modEvent;
             case AT_CIPSHUT:
                 cmd_conn_shut();
                 break;
+            case AT_CGNSPWR:
+                cmd_gnss_pwr();
+                break;
+            case AT_CGNSSEQ:
+                cmd_nmea_seq();
+                break;
+            case AT_CGNSINF:
+                cmd_cgns_info();
+                break;
             default:
             }
             // Suspend task for a time specified for getting response from modem
 
-            vTaskDelay(modEvent.cmdRespDelayMs);
+            vTaskDelay(modEventReq.cmdRespDelayMs);
 
             //Read response received from modem, validate and pass it to the queue for calling task
 
-            len = modemCmdResp(modemresp);
+            len = modemCmdGetResp(modemresp);
 
             UARTprintf("\n--------Response len : %d\n\n", len);
+            UARTprintf("\n--------Response: %s\n\n", modemresp);
+
+            if(modEventReq.eCommandType == AT_CGNSINF)
+            {
+                ModemCmdResp(AT_CGNSINF, modemresp);
+            }
+
         }
         else
             vTaskDelay(1);
@@ -159,3 +177,25 @@ tModemEvent modEvent;
     }
 
 }
+
+void ModemCmdReq(tModemCmdType ctype, uint32_t delay)
+{
+    tModemEventReq tmodEvntReq;
+
+    tmodEvntReq.eCommandType = ctype;
+    tmodEvntReq.cmdRespDelayMs = delay;
+    xQueueSend( g_QueModemReq, ( void * ) &tmodEvntReq, ( TickType_t ) 10 );
+
+}
+
+void ModemCmdResp(tModemCmdType ctype, char *msgresp)
+{
+
+    tModemEventResp tmodEvntResp;
+
+    tmodEvntResp.eCommandType = ctype;
+    strcpy(tmodEvntResp.mresp, msgresp);
+    xQueueSend( g_QueModemResp, ( void * ) &tmodEvntResp, ( TickType_t ) 10 );
+
+}
+

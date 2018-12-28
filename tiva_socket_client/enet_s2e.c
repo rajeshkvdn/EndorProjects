@@ -42,6 +42,7 @@
 #include "lwip_task.h"
 #include "serial_task.h"
 #include "modem_task.h"
+#include "reader_task.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -232,6 +233,16 @@ main(void)
         }
     }
 
+    //
+    // Initialize the Reader command task.
+    //
+    if(ReaderTaskInit() != 0)
+    {
+        UARTprintf("Failed to create Reader task!\n");
+        while(1)
+        {
+        }
+    }
     //
     // Initialize the Modem command task.
     //

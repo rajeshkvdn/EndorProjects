@@ -3,8 +3,8 @@
 
 #define MODEM_CMD_DELAY 1
 
-void modemcmdReq(char *req);
-int modemCmdResp(char *resp);
+void modemcmdPutReq(char *req);
+int modemCmdGetResp(char *resp);
 void cmd_test(void);
 void cmd_echo_enable(void);
 void cmd_echo_disable(void);

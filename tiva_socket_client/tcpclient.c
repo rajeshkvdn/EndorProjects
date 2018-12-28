@@ -45,9 +45,6 @@
 
 #define TCPECHO_THREAD_PRIO  ( tskIDLE_PRIORITY + 3 )
 
-void GsmGprsInit(void);
-void ModemCmdReq(tModemCmdType ctype, uint32_t delay);
-
 /*-----------------------------------------------------------------------------------*/
 static void tcpecho_thread(void *arg)
 {
@@ -63,8 +60,6 @@ static void tcpecho_thread(void *arg)
 
   IP4_ADDR( &local_ipaddr,192,168,1,200);
   IP4_ADDR( &remote_ipaddr,192,168,1,250);
-
-  GsmGprsInit();
 
   LWIP_UNUSED_ARG(arg);
 
@@ -125,53 +120,4 @@ void tcpecho_init(void)
 }
 /*-----------------------------------------------------------------------------------*/
 
-void createReqQue(void)
-{
-    g_QueModemReq  = xQueueCreate(64, sizeof(tModemEvent));
-    if(g_QueModemReq == 0)
-    {
-        return(1);
-    }
-}
-
-void GsmGprsInit(void)
-{
-    //Modem Initialization
-    ModemCmdReq(AT, 10);
-    ModemCmdReq(ATE1, 10);
-    ModemCmdReq(AT_CFUN, 10);
-    ModemCmdReq(AT_CUSD, 10);
-
-#if TST_VOICE_CALL
-    //Voice call
-    ModemCmdReq(ATD, 10);
-#endif
-#if TST_SMS_ALERT
-    ModemCmdReq(AT_CMGF, 10);
-    ModemCmdReq(AT_CSMP, 10);
-    ModemCmdReq(AT_CMGS, 10);
-#endif
-#if TST_GPRS_UPLOAD
-    ModemCmdReq(AT_CGATT, 10);
-    ModemCmdReq(AT_CSTT, 10);
-    ModemCmdReq(AT_CIICR, 100);
-    ModemCmdReq(AT_CIFSR, 1000);
-    ModemCmdReq(AT_CIPSTART, 1000);
-    ModemCmdReq(AT_CIPSEND, 1000);
-    ModemCmdReq(AT_CIPCLOSE, 100);
-    ModemCmdReq(AT_CIPSHUT, 1000);
-#endif
-
-
-}
-
-void ModemCmdReq(tModemCmdType ctype, uint32_t delay)
-{
-    tModemEvent tmodEvnt;
-
-    tmodEvnt.eCommandType = ctype;
-    tmodEvnt.cmdRespDelayMs = delay;
-    xQueueSend( g_QueModemReq, ( void * ) &tmodEvnt, ( TickType_t ) 10 );
-
-}
 #endif /* LWIP_NETCONN */

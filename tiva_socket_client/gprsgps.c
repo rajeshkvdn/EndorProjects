@@ -47,7 +47,7 @@ Params  :   req - Pointer to the command string in specific format (here sim808)
 Returns :  NIL
 */
 
-void modemcmdReq(char *req)
+void modemcmdPutReq(char *req)
 {
 int leng, i=0, count = 0;
 char rbuff[512];
@@ -73,7 +73,7 @@ Params  :   resp - response string address
 
 Returns :  Length of response string
 */
-int modemCmdResp(char *resp)
+int modemCmdGetResp(char *resp)
 {
     int i=0, count = 0;
     static char tempbuff[256];
@@ -102,7 +102,7 @@ Return  :       1       - Success
 */
 void cmd_test(void)
 {
-    modemcmdReq(at);
+    modemcmdPutReq(at);
 }
 
 /*
@@ -111,7 +111,7 @@ Return  :      NIL
 */
 void cmd_echo_enable(void)
 {
-    modemcmdReq(ate1);
+    modemcmdPutReq(ate1);
 }
 
 
@@ -121,7 +121,7 @@ Return  :      NIL
 */
 void cmd_echo_disable(void)
 {
-    modemcmdReq(ate1);
+    modemcmdPutReq(ate1);
 }
 
 
@@ -135,7 +135,7 @@ Return  :       NIL
 */
 void cmd_func_set(void)
 {
-    modemcmdReq(at_cfun);
+    modemcmdPutReq(at_cfun);
 }
 
 /*********************GPS COMMANDS***********************************/
@@ -150,7 +150,7 @@ Return  :       NIL
 */
 void cmd_gnss_pwr(void)
 {
-    modemcmdReq(at_cgns_pwr);
+    modemcmdPutReq(at_cgns_pwr);
 }
 
 
@@ -164,7 +164,7 @@ Return  :       NIL
 */
 void cmd_nmea_seq(void)
 {
-    modemcmdReq(at_nmea_seq);
+    modemcmdPutReq(at_nmea_seq);
 }
 
 
@@ -180,7 +180,7 @@ Return  :       NIL
 */
 void cmd_cgns_info(void)
 {
-    modemcmdReq(at_cgns_info);
+    modemcmdPutReq(at_cgns_info);
 }
 
 
@@ -196,7 +196,7 @@ Return  :       NIL
 */
 void cmd_gprs_stat(void)
 {
-    modemcmdReq(at_gprs_stat);
+    modemcmdPutReq(at_gprs_stat);
 }
 
 
@@ -210,7 +210,7 @@ Return  :       NIL
 */
 void cmd_apn_set(void)
 {
-    modemcmdReq(at_apn);
+    modemcmdPutReq(at_apn);
 }
 
 
@@ -224,7 +224,7 @@ Return  :       NIL
 */
 void cmd_wl_conn(void)
 {
-    modemcmdReq(at_conn);
+    modemcmdPutReq(at_conn);
 }
 
 
@@ -238,7 +238,7 @@ Return  :       NIL
 */
 void cmd_ip_get(void)
 {
-    modemcmdReq(at_ip_addr);
+    modemcmdPutReq(at_ip_addr);
 }
 
 
@@ -252,7 +252,7 @@ Return  :      NIL
 */
 void cmd_conn_start(void)
 {
-    modemcmdReq(at_start_conn);
+    modemcmdPutReq(at_start_conn);
 }
 
 
@@ -278,7 +278,7 @@ dlen = strlen(sbuf);
 
 sprintf(tempbuff,"AT+CIPSEND\r\n");
 
-modemcmdReq(tempbuff);
+modemcmdPutReq(tempbuff);
 
 vTaskDelay(1000);
 
@@ -286,7 +286,7 @@ memset(tempbuff, 0, sizeof(tempbuff));
 memcpy(tempbuff, sbuf, dlen);
 tempbuff[dlen]=0x1A;
 
-modemcmdReq(tempbuff);
+modemcmdPutReq(tempbuff);
 
 }
 
@@ -301,7 +301,7 @@ Return  :      NIL
 */
 void cmd_conn_close(void)
 {
-    modemcmdReq(at_ip_close);
+    modemcmdPutReq(at_ip_close);
 }
 
 
@@ -317,7 +317,7 @@ Return  :       1       - Success
 */
 void cmd_conn_shut(void)
 {
-    modemcmdReq(at_ip_shut);
+    modemcmdPutReq(at_ip_shut);
 }
 
 
@@ -334,7 +334,7 @@ Return  :       NIL
 */
 void cmd_smsformat_set(void)
 {
-    modemcmdReq(at_sms_format);
+    modemcmdPutReq(at_sms_format);
 }
 
 
@@ -348,7 +348,7 @@ Return  :       NIL
 */
 void cmd_smsmode_set(void)
 {
-    modemcmdReq(at_sms_csmp);
+    modemcmdPutReq(at_sms_csmp);
 }
 
 
@@ -362,7 +362,7 @@ Return  :       NIL
 */
 void cmd_serv_disable(void)
 {
-    modemcmdReq(at_cusd);
+    modemcmdPutReq(at_cusd);
 }
 
 /*
@@ -386,7 +386,7 @@ memset(tembuf, 0, sizeof(tembuf));
 strcpy(tembuf, at_sms_send);
 memcpy(&tembuf[12], phno, 10);
 
-modemcmdReq(tembuf);
+modemcmdPutReq(tembuf);
 
 memset(rep, 0, sizeof(rep));
 memset(tembuf, 0, sizeof(tembuf));
@@ -395,7 +395,7 @@ strncpy(tembuf, msg, len);
 tembuf[len] = 0x1A;		/*CtrlZ*/
 
 vTaskDelay(10);
-modemcmdReq(tembuf);
+modemcmdPutReq(tembuf);
 }
 
 
@@ -416,7 +416,7 @@ memset(tembuf, 0, sizeof(tembuf));
 strcpy(tembuf, at_call_start);
 memcpy(&tembuf[3], phno, 10);
 
-modemcmdReq(tembuf);
+modemcmdPutReq(tembuf);
 }
 
 /*
@@ -429,5 +429,5 @@ Return  :       NIL
 */
 void cmd_call_hold(void)
 {
-    modemcmdReq(at_call_hold);
+    modemcmdPutReq(at_call_hold);
 }
