@@ -45,7 +45,7 @@ uint32_t
 ModemTaskInit(void)
 {
 
-    g_QueModemReq  = xQueueCreate(64, sizeof(tModemEventReq));
+    g_QueModemReq  = xQueueCreate(16, sizeof(tModemEventReq));
     if(g_QueModemReq == 0)
     {
         return(1);
@@ -135,7 +135,7 @@ tModemEventReq modEventReq;
                 vTaskDelay(1000);
                 break;
             case AT_CIPSEND:
-                cmd_send_gprsdata("Gprs Data Upload");
+                cmd_send_gprsdata(modEventReq.payload);
                 break;
             case AT_CIPCLOSE:
                 cmd_conn_close();
@@ -178,12 +178,13 @@ tModemEventReq modEventReq;
 
 }
 
-void ModemCmdReq(tModemCmdType ctype, uint32_t delay)
+void ModemCmdReq(tModemCmdType ctype, uint32_t delay, void *pparam)
 {
     tModemEventReq tmodEvntReq;
 
     tmodEvntReq.eCommandType = ctype;
     tmodEvntReq.cmdRespDelayMs = delay;
+    tmodEvntReq.payload = (char*)pparam;
     xQueueSend( g_QueModemReq, ( void * ) &tmodEvntReq, ( TickType_t ) 10 );
 
 }

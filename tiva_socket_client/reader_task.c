@@ -52,14 +52,14 @@ ReaderTask(void *pvParameters)
         {
             if(modEventResp.eCommandType == AT_CGNSINF)
             {
-                ModemCmdReq(AT_CGATT, 10);
-                ModemCmdReq(AT_CSTT, 10);
-                ModemCmdReq(AT_CIICR, 100);
-                ModemCmdReq(AT_CIFSR, 1000);
-                ModemCmdReq(AT_CIPSTART, 1000);
-                ModemCmdReq(AT_CIPSEND, 1000);
-                ModemCmdReq(AT_CIPCLOSE, 100);
-                ModemCmdReq(AT_CIPSHUT, 1000);
+                ModemCmdReq(AT_CGATT, 10, 0);
+                ModemCmdReq(AT_CSTT, 10, 0);
+                ModemCmdReq(AT_CIICR, 100, 0);
+                ModemCmdReq(AT_CIFSR, 1000,0);
+                ModemCmdReq(AT_CIPSTART, 1000, 0);
+                ModemCmdReq(AT_CIPSEND, 1000, "Sending GPS data\n");
+                ModemCmdReq(AT_CIPCLOSE, 100, 0);
+                ModemCmdReq(AT_CIPSHUT, 1000, 0);
             }
         }
     }
@@ -105,34 +105,34 @@ void createReqQue(void)
 void GsmGprsInit(void)
 {
     //Modem Initialization
-    ModemCmdReq(AT, 10);
-    ModemCmdReq(ATE1, 10);
-    ModemCmdReq(AT_CFUN, 10);
-    ModemCmdReq(AT_CUSD, 10);
+    ModemCmdReq(AT, 10, 0);
+    ModemCmdReq(ATE1, 10, 0);
+    ModemCmdReq(AT_CFUN, 10, 0);
+    ModemCmdReq(AT_CUSD, 10, 0);
 
 #if TST_VOICE_CALL
     //Voice call
-    ModemCmdReq(ATD, 10);
+    ModemCmdReq(ATD, 10, 0);
 #endif
 #if TST_SMS_ALERT
-    ModemCmdReq(AT_CMGF, 10);
-    ModemCmdReq(AT_CSMP, 10);
-    ModemCmdReq(AT_CMGS, 10);
+    ModemCmdReq(AT_CMGF, 10, 0);
+    ModemCmdReq(AT_CSMP, 10, 0);
+    ModemCmdReq(AT_CMGS, 10, 0);
 #endif
 #if TST_GPRS_UPLOAD
-    ModemCmdReq(AT_CGATT, 10);
-    ModemCmdReq(AT_CSTT, 10);
-    ModemCmdReq(AT_CIICR, 100);
-    ModemCmdReq(AT_CIFSR, 1000);
-    ModemCmdReq(AT_CIPSTART, 1000);
-    ModemCmdReq(AT_CIPSEND, 1000);
-    ModemCmdReq(AT_CIPCLOSE, 100);
-    ModemCmdReq(AT_CIPSHUT, 1000);
+    ModemCmdReq(AT_CGATT, 10, 0);
+    ModemCmdReq(AT_CSTT, 10, 0);
+    ModemCmdReq(AT_CIICR, 100, 0);
+    ModemCmdReq(AT_CIFSR, 1000, 0);
+    ModemCmdReq(AT_CIPSTART, 1000, 0);
+    ModemCmdReq(AT_CIPSEND, 1000, "GPRS Upload OK\n");
+    ModemCmdReq(AT_CIPCLOSE, 100, 0);
+    ModemCmdReq(AT_CIPSHUT, 1000, 0);
 #endif
 #if TST_GPS_TRACK
-    ModemCmdReq(AT_CGNSPWR, 100);
-    ModemCmdReq(AT_CGNSSEQ, 100);
-    ModemCmdReq(AT_CGNSINF, 1000);
+    ModemCmdReq(AT_CGNSPWR, 100, 0);
+    ModemCmdReq(AT_CGNSSEQ, 100, 0);
+    ModemCmdReq(AT_CGNSINF, 1000, 0);
 #endif
 
 

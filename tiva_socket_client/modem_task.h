@@ -56,7 +56,7 @@ typedef struct
 {
     tModemCmdType eCommandType;
     uint32_t cmdRespDelayMs;
-    uint8_t mdata2;
+    char *payload;
 }
 tModemEventReq;
 
@@ -71,7 +71,7 @@ extern xQueueHandle g_QueModemReq;
 
 uint32_t ModemTaskInit(void);
 static void ModemTask(void *pvParameters);
-void ModemCmdReq(tModemCmdType ctype, uint32_t delay);
+void ModemCmdReq(tModemCmdType ctype, uint32_t delay, void *pparam);
 void ModemCmdResp(tModemCmdType ctype, char *msgresp);
 
 #endif /* MODEM_TASK_H_ */
