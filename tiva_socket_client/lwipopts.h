@@ -246,7 +246,7 @@
 //
 //*****************************************************************************
 #define PBUF_LINK_HLEN                  16          // default is 14
-#define PBUF_POOL_BUFSIZE               512
+#define PBUF_POOL_BUFSIZE               1500
                               // PBUF_POOL_BUFSIZE default is
                               // LWIP_MEM_ALIGN_SIZE(TCP_MSS+40+PBUF_LINK_HLEN)
 #define ETH_PAD_SIZE                    0           // default is 0
@@ -276,10 +276,10 @@
 //
 //*****************************************************************************
 #define TCPIP_THREAD_NAME              "tcpip_thread"
-#define TCPIP_THREAD_STACKSIZE          1024
+#define TCPIP_THREAD_STACKSIZE          (3*1024)
 #define TCPIP_THREAD_PRIO               3
 #define TCPIP_MBOX_SIZE                 32
-#define DEFAULT_THREAD_STACKSIZE        500
+#define DEFAULT_THREAD_STACKSIZE        (3*1024)
 //#define SLIPIF_THREAD_NAME             "slipif_loop"
 //#define SLIPIF_THREAD_STACKSIZE         0
 //#define SLIPIF_THREAD_PRIO              1

@@ -50,6 +50,12 @@ extern void UARTprintf(const char *pcString, ...);
 #define DEBUG_MSG               while(0) ((int (*)(char *, ...))0)
 #endif
 
+//Mcros to enable/disable tasks
+
+#define TASK_MODEM  1
+#define TASK_READER 1
+
+
 //*****************************************************************************
 //
 //! The number of serial to Ethernet ports supported by this module.

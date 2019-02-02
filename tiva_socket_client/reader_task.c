@@ -29,12 +29,21 @@
 #include "semphr.h"
 #include "modem_task.h"
 #include "reader_task.h"
+#include "rfid_cmd_data.h"
 
 #define STACKSIZE_ReaderTASK    512
 
+xQueueHandle g_QueReaderReq;
+xQueueHandle g_QueReaderResp;
+
+tReaderEventReq rdEventReq;
+tReaderEventResp rdEventResp;
 
 void GsmGprsInit(void);
+void readerSetParams(void);
 
+char rdcmd_setpar[700];
+char rdcmd_statt[700];
 
 static void
 ReaderTask(void *pvParameters)
@@ -42,8 +51,15 @@ ReaderTask(void *pvParameters)
     tModemEventResp modEventResp;
 
     GsmGprsInit();
+//    readerSetParams();
+//    readerStartAttend();
     while(1)
     {
+        if(xQueueReceive(g_QueReaderResp, (void*) &rdEventResp, (TickType_t)10) == pdTRUE)
+        {
+
+            UARTprintf("\n------------------Reader Attendance Response--------\n");
+            UARTprintf("%s", rdEventResp.respmsg);
         //
         // Block until a message is put on the g_QueSerial queue by the
         // interrupt handler.
@@ -57,26 +73,40 @@ ReaderTask(void *pvParameters)
                 ModemCmdReq(AT_CIICR, 100, 0);
                 ModemCmdReq(AT_CIFSR, 1000,0);
                 ModemCmdReq(AT_CIPSTART, 1000, 0);
-                ModemCmdReq(AT_CIPSEND, 1000, "Sending GPS data\n");
+//                ModemCmdReq(AT_CIPSEND, 1000, modEventResp.mresp);
+                ModemCmdReq(AT_CIPSEND, 1000, rdEventResp.respmsg);
                 ModemCmdReq(AT_CIPCLOSE, 100, 0);
                 ModemCmdReq(AT_CIPSHUT, 1000, 0);
             }
         }
+       }
     }
-    vTaskDelay(1000);
+    vTaskDelay(500);
 }
 
 
 uint32_t
 ReaderTaskInit(void)
 {
-
+//Message queue for Modem response string
     g_QueModemResp  = xQueueCreate(8, sizeof(tModemEventResp));
     if(g_QueModemResp == 0)
     {
         return(1);
     }
+//Message Queue for Reader Request
+    g_QueReaderReq  = xQueueCreate(8, sizeof(tReaderEventReq));
+    if(g_QueReaderReq == 0)
+    {
+        return(1);
+    }
 
+//Message Queue for Reader Response
+        g_QueReaderResp  = xQueueCreate(8, sizeof(tReaderEventResp));
+        if(g_QueReaderResp == 0)
+        {
+            return(1);
+        }
     //
     // Create the Modem task.
     //
@@ -135,6 +165,27 @@ void GsmGprsInit(void)
     ModemCmdReq(AT_CGNSINF, 1000, 0);
 #endif
 
+}
+
+void readerSetParams(void)
+{
+    memset(rdcmd_setpar, 0, sizeof(rdcmd_setpar));
+    rdEventReq.rdCommandType = SET_PARAMS;
+    //rdEventReq.reqmsg = jsonCmdSetParams();
+    strcpy(rdcmd_setpar,jsonCmdSetParams());
+    rdEventReq.reqmsg = rdcmd_setpar;
+    xQueueSend( g_QueReaderReq, ( void * ) &rdEventReq, ( TickType_t ) 10 );
+
+}
+
+void readerStartAttend(void)
+{
+    memset(rdcmd_statt, 0, sizeof(rdcmd_statt));
+    rdEventReq.rdCommandType = START_ATT;
+//    rdEventReq.reqmsg = jsonCmdStartAttd();
+    strcpy(rdcmd_statt,jsonCmdStartAttd());
+    rdEventReq.reqmsg = rdcmd_statt;
+    xQueueSend( g_QueReaderReq, ( void * ) &rdEventReq, ( TickType_t ) 10 );
 
 }
 

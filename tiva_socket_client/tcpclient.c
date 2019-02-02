@@ -41,76 +41,108 @@
 #include "utils/uartstdio.h"
 #include "string.h"
 #include "modem_task.h"
+#include "reader_task.h"
 
 
 #define TCPECHO_THREAD_PRIO  ( tskIDLE_PRIORITY + 3 )
 
+char rqmsg[1024];
+char resp[1200]={};
+
+tReaderEventResp rdEvntResp;
 /*-----------------------------------------------------------------------------------*/
 static void tcpecho_thread(void *arg)
 {
-  struct netconn *conn, *newconn;
-  err_t err;
-  struct netbuf *buf;
-  void *data;
-  u16_t len;
-  ip_addr_t local_ipaddr, remote_ipaddr;
+    struct netconn *conn, *newconn;
+    err_t err;
+    struct netbuf *buf;
+    void *data;
+    u16_t len, leni;
+    ip_addr_t local_ipaddr, remote_ipaddr;
 
-  char msg[10] = "Antique\n";
-  char resp[100]={};
+    tReaderEventReq readEventReq;
 
-  IP4_ADDR( &local_ipaddr,192,168,1,200);
-  IP4_ADDR( &remote_ipaddr,192,168,1,250);
+    IP4_ADDR( &local_ipaddr,192,168,1,200);
+    IP4_ADDR( &remote_ipaddr,192,168,1,250);
 
-  LWIP_UNUSED_ARG(arg);
+    LWIP_UNUSED_ARG(arg);
 
-  /* Create a new connection identifier. */
-  conn = netconn_new(NETCONN_TCP);
-  
-  if (conn != NULL)
-  {  
-    /* Bind connection to well known port number 7. */
-//    err = netconn_bind(conn, IP_ADDR_ANY, 7);
-    err = netconn_bind(conn, &local_ipaddr, 6000);
-    
-    if (err == ERR_OK)
+    /* Create a new connection identifier. */
+    conn = netconn_new(NETCONN_TCP);
+
+    if (conn != NULL)
     {
-      /* Tell connection to go into listening mode. */
-	err = netconn_connect ( conn, &remote_ipaddr, 6000 );
+        /* Bind connection to well known port number 7. */
+        //    err = netconn_bind(conn, IP_ADDR_ANY, 7);
+        err = netconn_bind(conn, &local_ipaddr, 6000);
 
-	UARTprintf(" netconn_connect  %d\n", err);
-	/* Grab new connection. */
+        if (err == ERR_OK)
+        {
+            /* Tell connection to go into listening mode. */
+            err = netconn_connect ( conn, &remote_ipaddr, 60000 );
 
-      while (1) 
-      {
-          len = strlen(msg);
-          err = netconn_write(conn, msg, len, NETCONN_COPY);
-          if(err == ERR_OK)
-              UARTprintf(" Send OK\n");
-          else
-              UARTprintf(" Send Failed %d\n", err);
+            UARTprintf(" netconn_connect  %d\n", err);
+            /* Grab new connection. */
 
-          UARTprintf(" Waiting for Response\n");
-          while (err = (netconn_recv(conn, &buf)));
-          if(err == ERR_OK)
-          {
-              netbuf_data(buf, &data, &len);
-              memcpy(resp, (char*)data, len);
-              resp[len]='\0';
-              UARTprintf(" Response:\n %s\n", resp);
-          }
+            while (1)
+            {
+                if(xQueueReceive(g_QueReaderReq, (void*) &readEventReq, (TickType_t)10) == pdTRUE)
+                {
+                    memset(rqmsg, 0, sizeof(rqmsg));
+                    switch(readEventReq.rdCommandType)
+                    {
+                    case GET_PARAMS:
+                        strcpy(rqmsg, readEventReq.reqmsg);
+                        break;
+                    case SET_PARAMS:
+                        strcpy(rqmsg, readEventReq.reqmsg);
+                        break;
+                    case START_ATT:
+                        strcpy(rqmsg, readEventReq.reqmsg);
+                        break;
+                    case STOP_ATT:
+                        strcpy(rqmsg, readEventReq.reqmsg);
+                        break;
+                    default:
+                    }
+                    len = strlen(rqmsg);
+                    err = netconn_write(conn, rqmsg, len, NETCONN_COPY);
+                    if(err == ERR_OK)
+                        UARTprintf(" Send OK\n");
+                    else
+                        UARTprintf(" Send Failed %d\n", err);
 
-      vTaskDelay(1000);
-      } /*while()*/
+                    UARTprintf(" Waiting for Response\n");
+                }
+                //while (err = (netconn_recv(conn, &buf)));
+                err = (netconn_recv(conn, &buf));
+                if(err == ERR_OK)
+                {
+                    netbuf_data(buf, &data, &len);
+                    memcpy(resp, (char*)data, len);
+                    resp[len]='\0';
+
+                    UARTprintf(" Reader Response:\n %s\n", resp);
+
+                        rdEvntResp.respmsg = resp;
+                        xQueueSend( g_QueReaderResp, ( void * ) &rdEvntResp, ( TickType_t ) 10 );
+                    while (netbuf_next(buf) >= 0);
+                    netbuf_delete(buf);
+
+                }
+
+                vTaskDelay(500);
+            } /*while()*/
+        }
+        else
+        {
+            UARTprintf(" can not bind TCP netconn\n");
+        }
     }
     else
     {
-      UARTprintf(" can not bind TCP netconn\n");
+        UARTprintf("can not create TCP netconn");
     }
-  }
-  else
-  {
-    UARTprintf("can not create TCP netconn");
-  }
 }
 /*-----------------------------------------------------------------------------------*/
 

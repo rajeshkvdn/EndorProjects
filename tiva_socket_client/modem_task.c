@@ -30,7 +30,7 @@
 #include "semphr.h"
 #include "modem_task.h"
 
-#define STACKSIZE_ModemTASK    512
+#define STACKSIZE_ModemTASK    1500
 
 //*****************************************************************************
 //

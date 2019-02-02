@@ -63,7 +63,7 @@ tModemEventReq;
 typedef struct
 {
     tModemCmdType eCommandType;
-    char mresp[256];
+    char mresp[1200];
 }
 tModemEventResp;
 

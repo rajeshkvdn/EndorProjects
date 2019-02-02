@@ -232,6 +232,7 @@ main(void)
         {
         }
     }
+#if TASK_READER
 
     //
     // Initialize the Reader command task.
@@ -243,6 +244,10 @@ main(void)
         {
         }
     }
+
+#endif
+
+#if TASK_MODEM
     //
     // Initialize the Modem command task.
     //
@@ -254,6 +259,7 @@ main(void)
         }
     }
 
+#endif
     /* Initialize tcp echo server */
     tcpecho_init();
 

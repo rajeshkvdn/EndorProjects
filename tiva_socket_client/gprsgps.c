@@ -50,11 +50,11 @@ Returns :  NIL
 void modemcmdPutReq(char *req)
 {
 int leng, i=0, count = 0;
-char rbuff[512];
-char cbuff[512];
+//char rbuff[1200];
+char cbuff[1200];
 
 
-memset(rbuff, 0, sizeof(rbuff));
+//memset(rbuff, 0, sizeof(rbuff));
 memset(cbuff, 0, sizeof(cbuff));
 strcpy(cbuff, req);
 leng = strlen(cbuff);
@@ -268,7 +268,7 @@ void cmd_send_gprsdata(char *sbuf)
 {
 int l, dlen;
 char *idx;
-char tempbuff[256];
+char tempbuff[1200];
 
 memset(tempbuff, 0, sizeof(tempbuff));
 
