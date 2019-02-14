@@ -20,7 +20,7 @@ File includes RFID reader commads and parsed data routines
 
 char cmd_temp[700];
 
-char http_header[600] = {
+const char http_header[600] = {
 "POST / HTTP/1.1\r\n"
 "Host: 192.165.1.78\r\n"
 "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n"
@@ -33,11 +33,11 @@ char http_header[600] = {
 "Content-Length: "
 };
 
-char cmd_readparams[50]={"deviceJson={\"DevOpt\":{\"ReadParam\"}}"};
-char cmd_setparams[100]={"deviceJson={\"DevOpt\":{\"TransMode\":\"1\",\"HeartTime\":\"10\",\"Transport\":\"4\"}}"};
-char cmd_startatt[60]={"deviceJson={\"DevOpt\":{\"StartAttenceReading\":\"1\"}}"};
-char cmd_stopatt[60]={"deviceJson={\"DevOpt\":{\"StopAttenceReading\":\"1\"}}"};
-char cmd_clearbuff[60]={"deviceJson={\"DevOpt\":{\"ClearBuffer\":\"1\"}}"};
+const char cmd_readparams[50]={"deviceJson={\"DevOpt\":{\"ReadParam\"}}"};
+const char cmd_setparams[100]={"deviceJson={\"DevOpt\":{\"TransMode\":\"1\",\"HeartTime\":\"10\",\"Transport\":\"4\"}}"};
+const char cmd_startatt[60]={"deviceJson={\"DevOpt\":{\"StartAttenceReading\":\"1\"}}"};
+const char cmd_stopatt[60]={"deviceJson={\"DevOpt\":{\"StopAttenceReading\":\"1\"}}"};
+const char cmd_clearbuff[60]={"deviceJson={\"DevOpt\":{\"ClearBuffer\":\"1\"}}"};
 
 char* jsonCmdReadParams(void)
 {
@@ -73,7 +73,7 @@ char* jsonCmdMakeReq(char *reqcmdstr)
 int str_index = 0, cmdlen = 0;
 memset(cmd_temp, 0, sizeof(cmd_temp));
 str_index = sprintf(cmd_temp, "%s", http_header);
-printf("str_index %d\n", str_index);
+UARTprintf("\n--------------------------Str_index %d\n", str_index);
 cmdlen = strlen(reqcmdstr);
 str_index += sprintf(&cmd_temp[str_index],"%d",cmdlen);
 str_index += sprintf(&cmd_temp[str_index],"\r\n\r\n%s",reqcmdstr);

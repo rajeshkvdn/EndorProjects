@@ -48,6 +48,7 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "timers.h"
 
 //*****************************************************************************
 //
@@ -164,6 +165,8 @@ vApplicationStackOverflowHook(xTaskHandle *pxTask, signed char *pcTaskName)
     }
 }
 
+xTimerHandle timerHndlSec;
+
 //*****************************************************************************
 //
 // The main entry function which configures the clock and hardware peripherals
@@ -180,6 +183,22 @@ main(void)
                                              SYSCTL_OSC_MAIN | SYSCTL_USE_PLL |
                                              SYSCTL_CFG_VCO_480),
                                             configCPU_CLOCK_HZ);
+
+    timerHndlSec = xTimerCreate("Timer", 						/* name */
+    								pdMS_TO_TICKS(1000*TIMEOUT_SEC), /* period/time */
+    								pdTRUE, 						/* auto reload */
+         							(void*)0, 						/* timer ID */
+    								vTimerCallback); 				/* callback */
+
+    if(timerHndlSec==NULL) {
+                for(;;); /* failure! */
+        }
+    else
+        {
+        	if (xTimerStart(timerHndlSec, 0)!=pdPASS) {
+        	    for(;;); /* failure!?! */
+        	}
+        }
 
     //
     // Configure the device pins based on the selected board.

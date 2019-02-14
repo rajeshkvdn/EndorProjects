@@ -72,7 +72,7 @@
 #define configCPU_CLOCK_HZ                  ( ( unsigned long ) 120000000 )
 #define configTICK_RATE_HZ                  ( ( portTickType ) 1000 )
 #define configMINIMAL_STACK_SIZE            ( ( unsigned short ) 200 )
-#define configTOTAL_HEAP_SIZE               ( ( size_t ) ( 40480 ) )
+#define configTOTAL_HEAP_SIZE               ( ( size_t ) ( 34000 ) )
 #define configMAX_TASK_NAME_LEN             ( 12 )
 #define configUSE_TRACE_FACILITY            1
 #define configUSE_16_BIT_TICKS              0
@@ -85,6 +85,16 @@
 #define configMAX_PRIORITIES                16
 #define configMAX_CO_ROUTINE_PRIORITIES     ( 2 )
 #define configQUEUE_REGISTRY_SIZE           10
+
+/*Timer*/
+#define configUSE_TIMERS 					1
+#define configTIMER_SERVICE_TASK_NAME 		"Tmr Svc"
+#define configTIMER_TASK_PRIORITY 			0 /*(configMAX_PRIORITIES - 1)*/
+#define configTIMER_TASK_STACK_DEPTH 		(configMINIMAL_STACK_SIZE * 2)
+
+#define configTIMER_QUEUE_LENGTH 			10
+#define TIMEOUT_SEC							3
+
 
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */

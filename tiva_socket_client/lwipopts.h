@@ -129,8 +129,8 @@
 // ---------- ICMP options ----------
 //
 //*****************************************************************************
-#define LWIP_ICMP                       1
-#define ICMP_TTL                       (IP_DEFAULT_TTL)
+//#define LWIP_ICMP                       1
+//#define ICMP_TTL                       (IP_DEFAULT_TTL)
 
 //*****************************************************************************
 //
@@ -246,7 +246,7 @@
 //
 //*****************************************************************************
 #define PBUF_LINK_HLEN                  16          // default is 14
-#define PBUF_POOL_BUFSIZE               1500
+#define PBUF_POOL_BUFSIZE               1120
                               // PBUF_POOL_BUFSIZE default is
                               // LWIP_MEM_ALIGN_SIZE(TCP_MSS+40+PBUF_LINK_HLEN)
 #define ETH_PAD_SIZE                    0           // default is 0
@@ -291,8 +291,8 @@
 //#define DEFAULT_THREAD_PRIO             1
 //#define DEFAULT_RAW_RECVMBOX_SIZE       0
 //#define DEFAULT_UDP_RECVMBOX_SIZE       0
-#define DEFAULT_TCP_RECVMBOX_SIZE       1000
-#define DEFAULT_ACCEPTMBOX_SIZE         1000
+#define DEFAULT_TCP_RECVMBOX_SIZE       10
+#define DEFAULT_ACCEPTMBOX_SIZE         10
 
 //*****************************************************************************
 //

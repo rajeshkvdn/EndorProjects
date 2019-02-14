@@ -268,7 +268,7 @@ void cmd_send_gprsdata(char *sbuf)
 {
 int l, dlen;
 char *idx;
-char tempbuff[1200];
+char tempbuff[1800];
 
 memset(tempbuff, 0, sizeof(tempbuff));
 
