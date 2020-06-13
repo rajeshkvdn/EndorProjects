@@ -65,6 +65,10 @@ extern xQueueHandle g_QueReaderResp;
 extern void vTimerCallback(xTimerHandle);
 int updateTagList(char *idinfo);
 int createAttndReport(void);
+int get_id_indx(char *id);
+int add_id(char *aid);
+int del_id(char *aid);
+void send_alert(uint8_t type, uint8_t indx);
 
 
 

@@ -112,7 +112,7 @@ static void tcpecho_thread(void *arg)
                     else
                         UARTprintf(" Send Failed %d\n", err);
 
-                    UARTprintf(" Waiting for Response\n");
+//                    UARTprintf(" Waiting for Response\n");
                 }
                 //while (err = (netconn_recv(conn, &buf)));
                 err = (netconn_recv(conn, &buf));
@@ -122,7 +122,7 @@ static void tcpecho_thread(void *arg)
                     memcpy(resp, (char*)data, len);
                     resp[len]='\0';
 
-                    UARTprintf(" Reader Response:\n %s\n", resp);
+//                    UARTprintf(" Reader Response:\n %s\n", resp);
 
                         rdEvntResp.respmsg = resp;
                         xQueueSend( g_QueReaderResp, ( void * ) &rdEvntResp, ( TickType_t ) 10 );

@@ -17,7 +17,7 @@
 #define TST_VOICE_CALL 0
 #define TST_SMS_ALERT 0
 #define TST_GPRS_UPLOAD 1
-#define TST_GPS_TRACK 1
+#define TST_GPS_TRACK 0
 //
 //Strtucture deffinitions of Modem Communication Task
 //
@@ -47,6 +47,7 @@ typedef enum
     AT_CSMP,
     AT_CUSD,
     AT_CMGS,
+	AT_CIPSSL,
     ATD,
     ATH
 }
@@ -56,14 +57,15 @@ typedef struct
 {
     tModemCmdType eCommandType;
     uint32_t cmdRespDelayMs;
-    char *payload;
+    uint8_t payload[200];
+    uint8_t psize;
 }
 tModemEventReq;
 
 typedef struct
 {
     tModemCmdType eCommandType;
-    char mresp[1200];
+    char mresp[200];
 }
 tModemEventResp;
 
@@ -71,7 +73,7 @@ extern xQueueHandle g_QueModemReq;
 
 uint32_t ModemTaskInit(void);
 static void ModemTask(void *pvParameters);
-void ModemCmdReq(tModemCmdType ctype, uint32_t delay, void *pparam);
+void ModemCmdReq(tModemCmdType ctype, uint32_t delay, void *pparam, uint8_t size);
 void ModemCmdResp(tModemCmdType ctype, char *msgresp);
 
 #endif /* MODEM_TASK_H_ */

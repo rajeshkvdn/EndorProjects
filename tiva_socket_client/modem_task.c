@@ -45,7 +45,7 @@ uint32_t
 ModemTaskInit(void)
 {
 
-    g_QueModemReq  = xQueueCreate(16, sizeof(tModemEventReq));
+    g_QueModemReq  = xQueueCreate(6, sizeof(tModemEventReq));
     if(g_QueModemReq == 0)
     {
         return(1);
@@ -111,7 +111,9 @@ tModemEventReq modEventReq;
                 cmd_smsmode_set();
                 break;
             case AT_CMGS:
-                cmd_sms_send("8921339752", "Hello", 5);
+                //cmd_sms_send("8921339752", "Hello");
+            	UARTprintf("\nModem Cmd...................: %s\n",modEventReq.payload);
+                cmd_sms_send("8921339752", modEventReq.payload);
                 break;
             case AT_CGATT:
                 cmd_gprs_stat();
@@ -135,7 +137,8 @@ tModemEventReq modEventReq;
                 vTaskDelay(1000);
                 break;
             case AT_CIPSEND:
-                cmd_send_gprsdata(modEventReq.payload);
+            	UARTprintf("\nCase AT_CIPSEND\n");
+                cmd_send_gprsdata(modEventReq.payload, modEventReq.psize);
                 break;
             case AT_CIPCLOSE:
                 cmd_conn_close();
@@ -151,6 +154,9 @@ tModemEventReq modEventReq;
                 break;
             case AT_CGNSINF:
                 cmd_cgns_info();
+                break;
+            case AT_CIPSSL:
+            	cmd_ssl_set();
                 break;
             default:
             }
@@ -172,19 +178,21 @@ tModemEventReq modEventReq;
 
         }
         else
-            vTaskDelay(1);
+            vTaskDelay(10);
 
     }
 
 }
 
-void ModemCmdReq(tModemCmdType ctype, uint32_t delay, void *pparam)
+void ModemCmdReq(tModemCmdType ctype, uint32_t delay, void *pparam, uint8_t size)
 {
     tModemEventReq tmodEvntReq;
 
     tmodEvntReq.eCommandType = ctype;
     tmodEvntReq.cmdRespDelayMs = delay;
-    tmodEvntReq.payload = (char*)pparam;
+    //tmodEvntReq.payload = (char*)pparam;
+    memcpy(tmodEvntReq.payload, (uint8_t*)pparam, size);
+    tmodEvntReq.psize=size;
     xQueueSend( g_QueModemReq, ( void * ) &tmodEvntReq, ( TickType_t ) 10 );
 
 }

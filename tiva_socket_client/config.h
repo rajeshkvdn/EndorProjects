@@ -54,7 +54,8 @@ extern void UARTprintf(const char *pcString, ...);
 
 #define TASK_MODEM  1
 #define TASK_READER 1
-
+#define DATA_SMS_PROC 1
+#define AWS_TEST 1
 
 //*****************************************************************************
 //

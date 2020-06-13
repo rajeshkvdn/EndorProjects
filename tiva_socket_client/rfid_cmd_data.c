@@ -73,7 +73,7 @@ char* jsonCmdMakeReq(char *reqcmdstr)
 int str_index = 0, cmdlen = 0;
 memset(cmd_temp, 0, sizeof(cmd_temp));
 str_index = sprintf(cmd_temp, "%s", http_header);
-UARTprintf("\n--------------------------Str_index %d\n", str_index);
+//UARTprintf("\n--------------------------Str_index %d\n", str_index);
 cmdlen = strlen(reqcmdstr);
 str_index += sprintf(&cmd_temp[str_index],"%d",cmdlen);
 str_index += sprintf(&cmd_temp[str_index],"\r\n\r\n%s",reqcmdstr);
